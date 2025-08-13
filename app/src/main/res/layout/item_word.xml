@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="12dp"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Front: Hiragana -->
+    <TextView
+        android:id="@+id/tvHiragana"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="さかな"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <!-- Small helper line: Romaji -->
+    <TextView
+        android:id="@+id/tvRomaji"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="sakana"
+        android:textSize="14sp"/>
+
+    <!-- Back: English -->
+    <TextView
+        android:id="@+id/tvEnglish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="fish"
+        android:textSize="16sp"/>
+</LinearLayout>
