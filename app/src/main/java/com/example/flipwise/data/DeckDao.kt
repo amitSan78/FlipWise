@@ -12,4 +12,12 @@ interface DeckDao {
 
     @Query("SELECT * FROM decks ORDER BY name ASC")
     suspend fun getAllDecks(): List<Deck>
+
+
+    @Query("SELECT * FROM decks ORDER BY id ASC")
+    suspend fun getAll(): List<Deck>
+
+    @Query("DELETE FROM decks WHERE id = :id")
+    suspend fun deleteById(id: Int)
+
 }

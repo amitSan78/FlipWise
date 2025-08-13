@@ -12,4 +12,7 @@ interface CategoryDao {
 
     @Query("SELECT * FROM categories WHERE deckId = :deckId ORDER BY name ASC")
     suspend fun getForDeck(deckId: Int): List<Category>
+
+    @Query("DELETE FROM categories WHERE id = :id")
+    suspend fun deleteById(id: Int)
 }

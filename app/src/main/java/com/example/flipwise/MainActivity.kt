@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnPlay).setOnClickListener {
-            // we'll wire this later (choose deck/categories)
+            startActivity(Intent(this, ChooseDeckActivity::class.java))
         }
     }
 }

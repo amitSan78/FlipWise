@@ -28,6 +28,10 @@
 
         <activity android:name=".CategoryListActivity" />
         <activity android:name=".WordListActivity" />
+        <activity android:name=".ChooseCategoriesActivity" />
+        <activity android:name=".ChooseDeckActivity" />
+        <activity android:name=".StudyActivity" />
+
 
 
     </application>
