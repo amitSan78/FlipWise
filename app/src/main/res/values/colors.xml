@@ -8,5 +8,12 @@
     <color name="SoftYellow">#FFF085</color>
     <color name="SoftBlue">#35AFCC</color>
     <color name="SoftOrange">#E96A00</color>
+    <color name="Flamingo">#FF8A8A</color>
+    <color name="RoyalBlue">#102E50</color>
+    <color name="dunno">#C5E9C5</color>
+    <color name="darkRed">#A31D1D</color>
+    <color name="green">#79C642</color>
+    <color name="cream">#F8F2DE</color>
+
 
 </resources>

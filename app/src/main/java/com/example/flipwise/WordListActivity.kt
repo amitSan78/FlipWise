@@ -56,6 +56,10 @@ class WordListActivity : AppCompatActivity() {
         listView = findViewById<ListView>(R.id.wordList)
         val fab = findViewById<FloatingActionButton>(R.id.fabAddWord)
 
+        // Add this after setting up listView and fab
+        val titleText = findViewById<TextView>(R.id.titleText)
+        titleText.text = intent.getStringExtra("categoryName") ?: "Words"
+
         // Initialize adapter
         adapter = WordAdapter(this, words)
         listView.adapter = adapter

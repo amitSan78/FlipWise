@@ -2,6 +2,8 @@
 
 package com.example.flipwise
 
+import android.animation.AnimatorInflater
+import android.animation.AnimatorSet
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -24,6 +26,7 @@ class StudyActivity : AppCompatActivity() {
     private val db by lazy { DatabaseProvider.get(this) }
 
     // UI
+    private lateinit var cardContainer: View
     private lateinit var front: View
     private lateinit var back: View
     private lateinit var tvWord: TextView
@@ -41,6 +44,10 @@ class StudyActivity : AppCompatActivity() {
     private val recent = ArrayDeque<String>() // store a key (word or id)
     private val RECENT_WINDOW = 3       // how many to remember
 
+    // Animation
+    private var isFlipping = false
+    private var originalElevation = 0f
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +56,7 @@ class StudyActivity : AppCompatActivity() {
         title = "Study"
 
         // Bind
+        cardContainer = findViewById(R.id.cardContainer)
         front = findViewById(R.id.frontSide)
         back = findViewById(R.id.backSide)
         tvWord = findViewById(R.id.tvWord)
@@ -57,6 +65,9 @@ class StudyActivity : AppCompatActivity() {
         btnToggleRomaji = findViewById(R.id.btnToggleRomaji)
         btnEasy = findViewById(R.id.btnEasy)
         btnStruggle = findViewById(R.id.btnStruggle)
+
+        // Set up the card for 3D flipping
+        setupCardForFlipping()
 
         detector = GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
             // must return true so we receive further events
@@ -83,7 +94,7 @@ class StudyActivity : AppCompatActivity() {
             }
         })
 
-        findViewById<View>(R.id.cardContainer).setOnTouchListener { _, ev ->
+        cardContainer.setOnTouchListener { _, ev ->
             detector.onTouchEvent(ev)
             true
         }
@@ -109,6 +120,25 @@ class StudyActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupCardForFlipping() {
+        // Set the distance of the camera from the card container for 3D effect
+        val scale = resources.displayMetrics.density
+        val cameraDistance = 8000 * scale
+
+        cardContainer.cameraDistance = cameraDistance
+
+        // Store original elevation to restore later
+        originalElevation = cardContainer.elevation
+
+        // The back side needs to be pre-rotated 180° so it appears correctly
+        // when the container is flipped
+        back.rotationY = 180f
+
+        // Initially show front, hide back
+        front.visibility = View.VISIBLE
+        back.visibility = View.GONE
+    }
+
     private fun showTop() {
         if (queue.isEmpty()) {
             finish() // or show a "Done!" dialog then finish
@@ -129,20 +159,93 @@ class StudyActivity : AppCompatActivity() {
         tvTranslation.text = c.translation
         tvRomaji.visibility = View.GONE
         btnToggleRomaji.text = "Show Romaji"
-        if (!showingFront) flip() // ensure we start on front
+
+        // Reset to front side without animation
+        if (!showingFront) {
+            resetToFront()
+        }
     }
 
+    private fun resetToFront() {
+        // Reset to front immediately without animation
+        showingFront = true
+        cardContainer.rotationY = 0f
+        front.visibility = View.VISIBLE
+        back.visibility = View.GONE
+    }
 
     private fun flip() {
-        // quick flip without heavy animation (we can add 3D later)
+        // Prevent multiple flips at once
+        if (isFlipping) return
+
+        isFlipping = true
+
+        val flipDuration = 300L // milliseconds
+
         if (showingFront) {
-            front.visibility = View.GONE
-            back.visibility = View.VISIBLE
+            // Flip from front to back
+            flipToBack(flipDuration)
         } else {
-            back.visibility = View.GONE
-            front.visibility = View.VISIBLE
+            // Flip from back to front
+            flipToFront(flipDuration)
         }
+
         showingFront = !showingFront
+    }
+
+    private fun flipToBack(duration: Long) {
+        // Temporarily remove elevation to prevent shadow artifacts during rotation
+        cardContainer.elevation = 0f
+
+        // At 90 degrees, switch content visibility
+        cardContainer.animate()
+            .rotationY(90f)
+            .setDuration(duration / 2)
+            .withEndAction {
+                // Switch from front to back content
+                front.visibility = View.GONE
+                back.visibility = View.VISIBLE
+
+                // Continue rotating to 180 degrees
+                cardContainer.animate()
+                    .rotationY(180f)
+                    .setDuration(duration / 2)
+                    .withEndAction {
+                        // Restore elevation after flip is complete
+                        cardContainer.elevation = originalElevation
+                        isFlipping = false
+                    }
+                    .start()
+            }
+            .start()
+    }
+
+    private fun flipToFront(duration: Long) {
+        // Temporarily remove elevation to prevent shadow artifacts during rotation
+        cardContainer.elevation = 0f
+
+        // Continue rotating from 180 to 270 degrees
+        cardContainer.animate()
+            .rotationY(270f)
+            .setDuration(duration / 2)
+            .withEndAction {
+                // At 270 degrees, switch content from back to front
+                back.visibility = View.GONE
+                front.visibility = View.VISIBLE
+
+                // Complete the rotation to 360 degrees
+                cardContainer.animate()
+                    .rotationY(360f)
+                    .setDuration(duration / 2)
+                    .withEndAction {
+                        // Reset rotation to 0 and restore elevation
+                        cardContainer.rotationY = 0f
+                        cardContainer.elevation = originalElevation
+                        isFlipping = false
+                    }
+                    .start()
+            }
+            .start()
     }
 
     private fun markCurrent(struggle: Boolean) {
@@ -167,7 +270,7 @@ class StudyActivity : AppCompatActivity() {
         var insertAt = (targetGap + Random.nextInt(-1, 2))
             .coerceIn(0, queue.size)
 
-        // If we’d land on an identical item (rare), bump forward one
+        // If we'd land on an identical item (rare), bump forward one
         if (insertAt < queue.size && queue.elementAt(insertAt).word == current.word) {
             insertAt = (insertAt + 1).coerceAtMost(queue.size)
         }
@@ -178,10 +281,11 @@ class StudyActivity : AppCompatActivity() {
         queue.clear(); queue.addAll(list)
 
         // Reset to front next card if needed and continue
-        if (!showingFront) flip()
+        if (!showingFront) {
+            resetToFront()
+        }
         showTop()
     }
-
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         detector.onTouchEvent(event)

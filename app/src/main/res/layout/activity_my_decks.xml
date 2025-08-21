@@ -15,7 +15,9 @@
         android:paddingTop="20dp"
         android:paddingBottom="20dp"
         android:text="Decks"
-        android:textSize="24sp"
+        android:textColor="@color/SoftBlue"
+        android:fontFamily="@font/bungeeinlineregular"
+        android:textSize="40sp"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="0dp" />
 
