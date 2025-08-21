@@ -4,11 +4,15 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface WordDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(word: Word)
+
+    @Update
+    suspend fun update(word: Word)
 
     @Query("SELECT * FROM words WHERE categoryId = :categoryId ORDER BY id ASC")
     suspend fun getForCategory(categoryId: Int): List<Word>
@@ -19,5 +23,6 @@ interface WordDao {
     @Query("DELETE FROM words WHERE id = :id")
     suspend fun deleteById(id: Int)
 
-
+    @Query("DELETE FROM words WHERE id IN (:ids)")
+    suspend fun deleteByIds(ids: List<Int>)
 }

@@ -12,7 +12,9 @@ object DatabaseProvider {
                 context.applicationContext,
                 AppDatabase::class.java,
                 "flipwise_db"
-            ).build()
+            )
+                .addMigrations(AppDatabase.MIGRATION_1_2)
+                .build()
             INSTANCE = i
             i
         }

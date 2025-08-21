@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ActionModeStyle" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@color/action_mode_background</item>
+        <item name="titleTextColor">@android:color/white</item>
+        <item name="subtitleTextColor">@android:color/white</item>
+    </style>
+
+    <style name="SelectedListItem">
+        <item name="android:background">@color/selection_highlight</item>
+    </style>
+</resources>

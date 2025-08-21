@@ -25,7 +25,8 @@
         app:layout_constraintTop_toBottomOf="@+id/titleDeck"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:listSelector="@drawable/list_item_selector"/>
 
     <!-- Optional: needs Material dependency
          implementation "com.google.android.material:material:1.12.0" -->
